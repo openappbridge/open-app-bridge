@@ -1,0 +1,76 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: npm ci
+      - run: node scripts/verify-release-tag.mjs
+      - run: npm run release:prepare
+      - name: Pack the exact npm artifact
+        id: pack
+        shell: bash
+        run: |
+          npm pack --ignore-scripts --json > package-result.json
+          archive="$(node -e "const value=require('./package-result.json'); const entries=Array.isArray(value)?value:Object.values(value); process.stdout.write(entries[0].filename)")"
+          echo "archive=$archive" >> "$GITHUB_OUTPUT"
+      - run: node scripts/prepare-release-assets.mjs "${{ steps.pack.outputs.archive }}"
+      - name: Transfer the verified release set
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: oab-release-${{ github.ref_name }}
+          path: release/
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: npm-release
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+      artifact-metadata: write
+    steps:
+      - name: Retrieve the verified release set
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: oab-release-${{ github.ref_name }}
+          path: release/
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - name: Attest release artifacts
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
+        with:
+          subject-path: release/*
+      - name: Publish to npm with trusted publishing
+        run: npm publish release/open-app-bridge-*.tgz --access public
+      - name: Publish immutable GitHub release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create "$GITHUB_REF_NAME" release/*
+          --verify-tag
+          --generate-notes
+          --title "Open App Bridge $GITHUB_REF_NAME"

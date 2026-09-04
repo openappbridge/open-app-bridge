@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:oab:schema:detached-manifest:1.0",
+  "title": "Open App Bridge detached-datachannel/1 transfer manifest",
+  "description": "Structural schema. Conforming validators additionally require consecutive unique indexes, at most 16 unique representation media types, unique canonical asset names, exact total-byte sums and digests, live-capability membership and limits, and canonical display/source metadata without receiver-side normalization.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "transport",
+    "frameVersion",
+    "transferId",
+    "title",
+    "source",
+    "items",
+    "totalBytes"
+  ],
+  "properties": {
+    "protocol": { "const": "org.openapp.bridge" },
+    "transport": { "const": "detached-datachannel/1" },
+    "frameVersion": { "const": 1 },
+    "transferId": {
+      "type": "string",
+      "anyOf": [
+        { "pattern": "^(?:[A-Za-z0-9_-]{4}){6,32}$" },
+        { "pattern": "^(?:[A-Za-z0-9_-]{4}){5,31}[A-Za-z0-9_-][AQgw]$" },
+        { "pattern": "^(?:[A-Za-z0-9_-]{4}){5,31}[A-Za-z0-9_-]{2}[AEIMQUYcgkosw048]$" }
+      ]
+    },
+    "title": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 240,
+      "pattern": "^[^\\u0000-\\u001F\\u007F-\\u009F\\u061C\\u200E\\u200F\\u2028\\u2029\\u202A-\\u202E\\u2066-\\u2069]*$"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["application", "url"],
+      "properties": {
+        "application": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[^\\u0000-\\u001F\\u007F-\\u009F\\u061C\\u200E\\u200F\\u2028\\u2029\\u202A-\\u202E\\u2066-\\u2069]*$"
+        },
+        "url": {
+          "type": ["string", "null"],
+          "format": "uri",
+          "maxLength": 2048,
+          "pattern": "^(?:https://(?![^/?#]*@)[^/?#]+(?:/[^?#\\\\]*)?|http://(?:localhost|(?:[A-Za-z0-9-]+\\.)*localhost|127(?:\\.(?:25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})){3}|\\[::1\\])(?::[0-9]{1,5})?(?:/[^?#\\\\]*)?)$"
+        }
+      }
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 272,
+      "items": { "$ref": "#/$defs/item" },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["kind"],
+            "properties": { "kind": { "const": "representation" } }
+          },
+          "minContains": 0,
+          "maxContains": 16
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["kind"],
+            "properties": { "kind": { "const": "asset" } }
+          },
+          "minContains": 0,
+          "maxContains": 256
+        }
+      ]
+    },
+    "totalBytes": { "type": "integer", "minimum": 1, "maximum": 33554432 }
+  },
+  "$defs": {
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["index", "kind", "mimeType", "name", "bytes", "sha256"],
+      "properties": {
+        "index": { "type": "integer", "minimum": 0, "maximum": 65534 },
+        "kind": { "enum": ["representation", "asset"] },
+        "mimeType": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9!#$&^_.+-]{0,126}/[a-z0-9][a-z0-9!#$&^_.+-]{0,126}$"
+        },
+        "name": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 240,
+          "pattern": "^[^/\\\\\\u0000-\\u001F\\u007F-\\u009F\\u061C\\u200E\\u200F\\u2028\\u2029\\u202A-\\u202E\\u2066-\\u2069]+$"
+        },
+        "bytes": { "type": "integer", "minimum": 1, "maximum": 33554432 },
+        "sha256": { "type": "string", "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "kind": { "const": "representation" } } },
+          "then": { "properties": { "name": { "const": null } } },
+          "else": {
+            "properties": {
+              "name": {
+                "type": "string",
+                "not": { "enum": [".", ".."] }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

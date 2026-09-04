@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <script>
+      (() => {
+        "use strict";
+        const limits = Object.freeze({
+          fragment: 32 * 1024,
+          href: 64 * 1024,
+          origin: 2 * 1024,
+          pathname: 8 * 1024,
+          search: 16 * 1024,
+        });
+        const encoder = new TextEncoder();
+        const bounded = (value, maximum) =>
+          value.length <= maximum && encoder.encode(value).byteLength <= maximum;
+        const marked = (fragment) => {
+          let cursor = fragment.startsWith("#") ? 1 : 0;
+          while (cursor <= fragment.length) {
+            const separator = fragment.indexOf("&", cursor);
+            const end = separator < 0 ? fragment.length : separator;
+            const equals = fragment.indexOf("=", cursor);
+            const nameEnd = equals >= cursor && equals < end ? equals : end;
+            const name = fragment.slice(cursor, nameEnd);
+            if (
+              name === "oab-link" ||
+              name === "oab-detached"
+            ) return true;
+            if (separator < 0) break;
+            cursor = separator + 1;
+          }
+          return false;
+        };
+
+        let scrubbedHandoff = null;
+        let bootstrapError = null;
+        let fragment = typeof location.hash === "string" ? location.hash : "";
+        if (marked(fragment)) {
+          let href = null;
+          let origin = String(location.origin || "");
+          let pathname = String(location.pathname || "");
+          let search = String(location.search || "");
+          let withinBounds =
+            bounded(fragment.replace(/^#/, ""), limits.fragment) &&
+            bounded(origin, limits.origin) &&
+            bounded(pathname, limits.pathname) &&
+            bounded(search, limits.search);
+          if (withinBounds) {
+            href = String(location.href || "");
+            withinBounds = bounded(href, limits.href);
+          }
+          if (withinBounds) {
+            scrubbedHandoff = Object.freeze({
+              fragment,
+              href,
+              origin,
+              pathname,
+              search,
+            });
+          } else {
+            bootstrapError = "The incoming handoff exceeded its bounded capture limit.";
+          }
+
+          history.replaceState(history.state ?? null, "", pathname || "/");
+          if (location.hash || location.search) {
+            location.replace(pathname || "/");
+            return;
+          }
+          fragment = null;
+          href = null;
+          origin = null;
+          pathname = null;
+          search = null;
+        }
+
+        let active = true;
+        const abandon = () => {
+          active = false;
+          scrubbedHandoff = null;
+          bootstrapError = null;
+          document.removeEventListener("DOMContentLoaded", install);
+        };
+        const install = () => {
+          if (!active) return;
+          import("./receiver.js").then((module) => {
+            if (!active) return;
+            const captured = scrubbedHandoff;
+            const capturedError = bootstrapError;
+            scrubbedHandoff = null;
+            bootstrapError = null;
+            return module.installReceiver({
+              ...(captured == null ? {} : { scrubbedHandoff: captured }),
+              ...(capturedError == null ? {} : { bootstrapError: capturedError }),
+            });
+          }).catch((error) => {
+            if (!active) return;
+            const status = document.getElementById("waiting");
+            if (status) {
+              status.textContent =
+                `${error?.code ?? "receive_failed"}: ${error?.message ?? "The receiver could not be initialized."}`;
+            }
+          }).finally(() => {
+            scrubbedHandoff = null;
+            bootstrapError = null;
+            window.removeEventListener("pagehide", abandon);
+          });
+        };
+        window.addEventListener("pagehide", abandon, { once: true });
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", install, { once: true });
+        } else {
+          install();
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>OAB receiver example</title>
+    <link rel="stylesheet" href="../shared.css">
+  </head>
+  <body>
+    <main>
+      <header class="product-header" aria-label="OAB Reference Receiver">
+        <img src="./app-icon.png" alt="" width="64" height="64">
+        <div>
+          <div class="eyebrow">OAB Reference Receiver</div>
+          <h1>Incoming content</h1>
+        </div>
+      </header>
+      <p id="waiting" role="status" aria-live="polite">
+        Waiting for something to be shared with this app.
+      </p>
+
+      <section id="incoming" class="card stack hidden" aria-labelledby="incoming-heading">
+        <div class="eyebrow">Someone wants to share with you</div>
+        <h2 id="incoming-heading">Review shared content?</h2>
+        <p><strong id="incoming-origin"></strong> would like to share content with this app.</p>
+        <p>We will check the sender before opening a temporary, safe preview. Nothing will be saved yet.</p>
+        <p class="security-note">A temporary page from <strong id="incoming-callback-origin"></strong> may briefly appear while this app prepares the preview. Receiving shared content never requires a password or payment.</p>
+        <div class="actions">
+          <a id="verify" class="action-button">Review shared content</a>
+          <button id="cancel-incoming" class="secondary">Not now</button>
+        </div>
+      </section>
+
+      <section id="preview" class="card stack hidden" aria-labelledby="preview-heading">
+        <h2 id="preview-heading">Preview shared content</h2>
+        <div id="provenance" class="verified"></div>
+        <h3 id="preview-title"></h3>
+        <pre id="preview-text"></pre>
+        <div id="preview-assets" class="asset-list"></div>
+        <p id="preview-status" class="status" role="status" aria-live="polite"></p>
+        <div class="actions">
+          <button id="preserve">Save</button>
+          <button id="discard" class="danger">Discard</button>
+        </div>
+      </section>
+
+    </main>
+
+    <dialog id="consent" aria-labelledby="consent-title">
+      <div class="stack">
+        <div class="eyebrow">Unverified portable link</div>
+        <h2 id="consent-title">Review shared text?</h2>
+        <p>This sharing method cannot verify which app created the link. Nothing will be saved until you choose Save.</p>
+        <div class="actions">
+          <button id="allow-once">Review once</button>
+          <button id="deny" class="secondary">Not now</button>
+        </div>
+      </div>
+    </dialog>
+
+  </body>
+</html>

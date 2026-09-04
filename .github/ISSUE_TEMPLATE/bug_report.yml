@@ -1,0 +1,39 @@
+name: Bug report
+description: Report reproducible SDK, specification, or interoperability behavior.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Do not report security vulnerabilities publicly; use private vulnerability reporting.
+  - type: input
+    id: version
+    attributes:
+      label: OAB version or commit
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Sender and receiver environment
+      description: Include browsers, platforms, and relevant hosting configuration.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true

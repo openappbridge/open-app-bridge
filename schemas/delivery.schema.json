@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:oab:schema:delivery:1.0",
+  "title": "Open App Bridge link-envelope transient preview delivery",
+  "description": "The low-assurance link-envelope value delivered to receiver preview UI after an explicit receiver authorization decision. Detached deliveries use detached-delivery.schema.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "wireVersion",
+    "requestId",
+    "batchId",
+    "intent",
+    "classification",
+    "title",
+    "representations",
+    "assets",
+    "source",
+    "evidence"
+  ],
+  "properties": {
+    "protocol": { "const": "org.openapp.bridge" },
+    "wireVersion": { "const": "1.0" },
+    "requestId": {
+      "type": "string",
+      "pattern": "^(?:[A-Za-z0-9_-]{24}(?:[A-Za-z0-9_-]{4}){0,26}|[A-Za-z0-9_-]{21}(?:[A-Za-z0-9_-]{4}){0,26}[AQgw]|[A-Za-z0-9_-]{22}(?:[A-Za-z0-9_-]{4}){0,26}[AEIMQUYcgkosw048])$"
+    },
+    "batchId": {
+      "type": "string",
+      "pattern": "^oab_(?:[A-Za-z0-9_-]{24}(?:[A-Za-z0-9_-]{4}){0,26}|[A-Za-z0-9_-]{21}(?:[A-Za-z0-9_-]{4}){0,26}[AQgw]|[A-Za-z0-9_-]{22}(?:[A-Za-z0-9_-]{4}){0,26}[AEIMQUYcgkosw048])$"
+    },
+    "intent": { "const": "preview" },
+    "classification": { "const": "non-confidential" },
+    "title": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 240,
+      "pattern": "^[^\\u0000-\\u001F\\u007F-\\u009F\\u061C\\u200E\\u200F\\u2028\\u2029\\u202A-\\u202E\\u2066-\\u2069]*$"
+    },
+    "representations": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "text/markdown": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\u0000]*\\S[^\\u0000]*$"
+        },
+        "text/plain": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\u0000]*\\S[^\\u0000]*$"
+        }
+      }
+    },
+    "assets": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["origin", "application", "url"],
+      "properties": {
+        "origin": { "const": null },
+        "application": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[^\\u0000-\\u001F\\u007F-\\u009F\\u061C\\u200E\\u200F\\u2028\\u2029\\u202A-\\u202E\\u2066-\\u2069]*$"
+        },
+        "url": {
+          "type": ["string", "null"],
+          "format": "uri",
+          "maxLength": 2048,
+          "pattern": "^(?:https://(?![^/?#]*@)[^/?#]+(?:/[^?#\\\\]*)?|http://(?:localhost|(?:[A-Za-z0-9-]+\\.)*localhost|127(?:\\.(?:25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})){3}|\\[::1\\])(?::[0-9]{1,5})?(?:/[^?#\\\\]*)?)$"
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "transport",
+        "originVerified",
+        "receiverAuthorized",
+        "appAttested",
+        "userActivationObserved",
+        "declarationIdMatched"
+      ],
+      "properties": {
+        "transport": { "const": "link-envelope/1" },
+        "originVerified": { "const": false },
+        "receiverAuthorized": { "const": true },
+        "appAttested": { "const": false },
+        "userActivationObserved": { "const": false },
+        "declarationIdMatched": { "const": true }
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+[
+  { "name": "script", "html": "<script>parent.pwned=true</script>" },
+  { "name": "event-handler", "html": "<img src=x onerror=alert(1)>" },
+  { "name": "javascript-url", "html": "<a href=\"javascript:alert(1)\">open</a>" },
+  { "name": "signed-url", "html": "<img src=\"https://files.example/private?signature=secret\">" },
+  { "name": "css-network", "html": "<style>@import url(https://track.example/x)</style>" },
+  { "name": "inline-css-network", "html": "<p style=\"background:url(https://track.example/x)\">x</p>" },
+  { "name": "form", "html": "<form action=\"https://track.example\"><input name=x></form>" },
+  { "name": "iframe-srcdoc", "html": "<iframe srcdoc=\"<script>alert(1)</script>\"></iframe>" },
+  { "name": "svg", "html": "<svg><a href=\"https://track.example\"><text>x</text></a></svg>" },
+  { "name": "mathml", "html": "<math><annotation-xml encoding=\"text/html\"><script>alert(1)</script></annotation-xml></math>" },
+  { "name": "custom-element", "html": "<evil-widget data-secret=\"x\"></evil-widget>" },
+  { "name": "meta-refresh", "html": "<meta http-equiv=refresh content=\"0;url=https://track.example\">" },
+  { "name": "base", "html": "<base href=\"https://track.example/\"><a href=x>open</a>" },
+  { "name": "hidden", "html": "<p hidden>secret</p><p aria-hidden=\"true\">secret</p>" }
+]

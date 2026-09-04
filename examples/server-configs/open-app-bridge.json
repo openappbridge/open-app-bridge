@@ -1,0 +1,34 @@
+{
+  "protocol": "org.openapp.bridge",
+  "wireVersions": ["1.0"],
+  "status": "enabled",
+  "endpoint": "/_oab/receive",
+  "intents": ["preview"],
+  "transports": {
+    "link-envelope/1": {
+      "representations": ["text/markdown", "text/plain"],
+      "assetTypes": [],
+      "limits": {
+        "maximumUrlBytes": 16384,
+        "maximumFragmentBytes": 12288,
+        "maximumDecodedBytes": 8192
+      }
+    },
+    "detached-datachannel/1": {
+      "receiverHelper": "/_oab/detached-helper",
+      "representations": ["text/markdown", "text/html", "text/plain"],
+      "assetTypes": ["image/png", "image/jpeg", "image/webp", "image/svg+xml"],
+      "limits": {
+        "maximumSignalingBytes": 32768,
+        "maximumFrameBytes": 16384,
+        "maximumTransferBytes": 16777216,
+        "maximumAssets": 32
+      }
+    }
+  },
+  "declarationId": "replace-on-every-capability-change",
+  "senderPolicy": "user-controlled",
+  "discoveryTtl": 300,
+  "applicationManifest": "/manifest.webmanifest",
+  "extensions": {}
+}

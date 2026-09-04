@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>OAB sender example</title>
+    <link rel="stylesheet" href="../shared.css">
+  </head>
+  <body>
+    <main>
+      <div class="eyebrow">Open App Bridge · Sender</div>
+      <h1>Send editable content to any willing receiver.</h1>
+      <p>
+        Enter a domain, verify its public HTTPS declaration, then use a separate
+        user action to send. The sender owns its own favourites and history.
+      </p>
+
+      <section class="card stack" aria-labelledby="receiver-heading">
+        <h2 id="receiver-heading">1. Check receiver</h2>
+        <label>
+          Receiver domain
+          <input
+            id="origin"
+            type="text"
+            inputmode="url"
+            autocomplete="off"
+            value="127.0.0.1:8080"
+            placeholder="markerpad.app"
+            spellcheck="false"
+          >
+        </label>
+        <div class="actions">
+          <button id="check">Check receiver</button>
+          <button id="favorite" class="secondary" disabled>Add to favourites</button>
+        </div>
+        <div id="declaration" class="verified hidden" aria-live="polite"></div>
+      </section>
+
+      <section class="card stack" aria-labelledby="content-heading">
+        <h2 id="content-heading">2. Prepare content</h2>
+        <label>
+          Title
+          <input id="title" value="Portable research note">
+        </label>
+        <label>
+          Markdown
+          <textarea id="markdown"># Portable research note
+
+This content can use either an explicit portable link or a private peer channel.
+
+- No central registry
+- Receiver authorization
+- Preview before persistence</textarea>
+        </label>
+        <label>
+          Optional embeddable assets
+          <input id="assets" type="file" multiple accept=".md,.markdown,.txt,.png,.jpg,.jpeg,.gif,.webp,.svg">
+        </label>
+      </section>
+
+      <section class="card stack" aria-labelledby="send-heading">
+        <h2 id="send-heading">3. Send</h2>
+        <p>
+          Choose one advertised profile explicitly. A failed private transfer
+          never falls back to a portable link.
+        </p>
+        <fieldset id="profiles" class="stack" disabled>
+          <legend>Transfer profile</legend>
+          <label>
+            <span><input id="detached" name="profile" type="radio" value="detached-datachannel/1"> Private peer channel</span>
+            <small>Encrypted content and assets, verified sender origin, preview result.</small>
+          </label>
+          <label>
+            <span><input id="link" name="profile" type="radio" value="link-envelope/1"> Portable text link</span>
+            <small>Non-confidential Markdown/plain text only; no sender proof or receipt.</small>
+          </label>
+        </fieldset>
+        <div class="actions">
+          <a id="send" class="action-button" aria-disabled="true">Send to verified receiver</a>
+          <button id="clear" class="secondary">Clear local favourites</button>
+        </div>
+        <div id="status" class="status" aria-live="polite"></div>
+      </section>
+    </main>
+    <script type="module" src="sender.js"></script>
+  </body>
+</html>

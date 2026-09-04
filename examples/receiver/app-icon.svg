@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-label="Open App Bridge reference receiver">
+  <defs>
+    <linearGradient id="background" x1="24" y1="20" x2="168" y2="172" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#275bd6"/>
+      <stop offset="1" stop-color="#7047a8"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="44" fill="url(#background)"/>
+  <path d="M52 70h58a26 26 0 0 1 0 52H82" fill="none" stroke="#fff" stroke-width="15" stroke-linecap="round"/>
+  <path d="m84 96-22 26 22 26" fill="none" stroke="#fff" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="136" cy="70" r="11" fill="#b9d0ff"/>
+</svg>

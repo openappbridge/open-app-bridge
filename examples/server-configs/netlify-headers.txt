@@ -1,0 +1,53 @@
+# Header skeleton only; see README.md. Publish open-app-bridge.json at the exact extensionless well-known path
+# (or add an equivalent Netlify rewrite in _redirects). Discovery is a JSON
+# body; no OAB capability headers are used.
+/.well-known/open-app-bridge
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=300
+  Content-Type: application/json; charset=utf-8
+  Referrer-Policy: no-referrer
+  X-Content-Type-Options: nosniff
+
+/manifest.webmanifest
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
+
+/app-icon.png
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
+  X-Content-Type-Options: nosniff
+
+/_oab/detached-helper
+  Cache-Control: no-store
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  Cross-Origin-Opener-Policy: same-origin
+  Referrer-Policy: origin
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+
+/_oab/receive
+  Cache-Control: no-store
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-yWjp6X7L9yDoL9kNnbJwPcOSFZc7Jycj8BFWlRpxWV0='; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  Cross-Origin-Opener-Policy: same-origin
+  Referrer-Policy: no-referrer
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+
+/.well-known/open-app-bridge/callback
+  Cache-Control: no-store
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  Cross-Origin-Opener-Policy: same-origin
+  Referrer-Policy: no-referrer
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+
+# Package every transitive script, module, stylesheet, font, image, and other
+# asset imported by the three restricted Documents under this reserved prefix.
+# Do not place ordinary application assets here. Cache-Control alone does not
+# defeat an already controlling service worker; complete service worker migration
+# before enabling OAB.
+/_oab/resources/*
+  Cache-Control: no-store
+  Cross-Origin-Resource-Policy: same-origin
+  Referrer-Policy: no-referrer
+  X-Content-Type-Options: nosniff

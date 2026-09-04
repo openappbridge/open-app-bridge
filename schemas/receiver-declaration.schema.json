@@ -1,0 +1,200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:oab:schema:receiver-declaration:1.0",
+  "title": "Open App Bridge JSON receiver declaration",
+  "description": "Structural schema. Conforming implementations must additionally apply the normative semantic checks for canonical URLs, numeric limit relationships, serialized capability size, and isolated validation of each known transport profile.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "wireVersions",
+    "status",
+    "endpoint",
+    "intents",
+    "transports"
+  ],
+  "properties": {
+    "protocol": { "const": "org.openapp.bridge" },
+    "wireVersions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "contains": {
+        "const": "1.0"
+      },
+      "items": {
+        "type": "string",
+        "pattern": "^[1-9][0-9]*\\.[0-9]+(?:-[a-z0-9.-]+)?$"
+      }
+    },
+    "status": { "const": "enabled" },
+    "endpoint": {
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^/(?!/)(?!.*(?:^|/)\\.{1,2}(?:/|$))[^%?#\\\\\\u0000-\\u001F\\u007F]*$"
+    },
+    "intents": {
+      "type": "array",
+      "minItems": 1,
+      "contains": { "const": "preview" },
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "transports": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9-]*/[1-9][0-9]*(?:\\.[0-9]+)?$"
+      },
+      "properties": {
+        "link-envelope/1": { "type": "object" },
+        "detached-datachannel/1": { "type": "object" }
+      },
+      "additionalProperties": { "type": "object" }
+    },
+    "senderPolicy": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,63}$"
+    },
+    "declarationId": {
+      "type": ["string", "null"],
+      "pattern": "^[!-~]{8,512}$"
+    },
+    "discoveryTtl": { "type": "integer", "minimum": 1, "maximum": 3600 },
+    "applicationManifest": {
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^/(?!/)(?!.*(?:^|/)\\.{1,2}(?:/|$))[^%?#\\\\\\u0000-\\u001F\\u007F]*$"
+    },
+    "extensions": { "type": "object" }
+  },
+  "$defs": {
+    "mimeList": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9!#$&^_.+-]{0,126}/[a-z0-9][a-z0-9!#$&^_.+-]{0,126}$"
+      }
+    },
+    "linkEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["representations", "assetTypes", "limits"],
+      "properties": {
+        "representations": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "enum": ["text/markdown", "text/plain"] }
+        },
+        "assetTypes": { "type": "array", "maxItems": 0 },
+        "limits": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "maximumUrlBytes",
+            "maximumFragmentBytes",
+            "maximumDecodedBytes"
+          ],
+          "properties": {
+            "maximumUrlBytes": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65536
+            },
+            "maximumFragmentBytes": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 32768
+            },
+            "maximumDecodedBytes": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 24576
+            }
+          }
+        },
+        "extensions": { "type": "object" }
+      }
+    },
+    "detachedDataChannel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["representations", "assetTypes", "limits", "receiverHelper"],
+      "properties": {
+        "representations": {
+          "allOf": [
+            { "$ref": "#/$defs/mimeList" },
+            { "maxItems": 16 }
+          ]
+        },
+        "assetTypes": {
+          "allOf": [
+            { "$ref": "#/$defs/mimeList" },
+            { "maxItems": 64 }
+          ]
+        },
+        "receiverHelper": {
+          "type": "string",
+          "maxLength": 2048,
+          "pattern": "^/(?!/)(?!.*(?:^|/)\\.{1,2}(?:/|$))[^%?#\\\\\\u0000-\\u001F\\u007F]*$"
+        },
+        "limits": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "maximumTransferBytes",
+            "maximumAssets",
+            "maximumSignalingBytes",
+            "maximumFrameBytes"
+          ],
+          "properties": {
+            "maximumTransferBytes": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 33554432
+            },
+            "maximumAssets": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 256
+            },
+            "maximumSignalingBytes": {
+              "type": "integer",
+              "minimum": 1024,
+              "maximum": 32768
+            },
+            "maximumFrameBytes": {
+              "type": "integer",
+              "minimum": 17,
+              "maximum": 16384
+            }
+          }
+        },
+        "extensions": { "type": "object" }
+      },
+      "allOf": [
+        {
+          "anyOf": [
+            { "properties": { "representations": { "minItems": 1 } } },
+            { "properties": { "assetTypes": { "minItems": 1 } } }
+          ]
+        },
+        {
+          "if": {
+            "properties": {
+              "limits": {
+                "properties": { "maximumAssets": { "const": 0 } },
+                "required": ["maximumAssets"]
+              }
+            }
+          },
+          "then": { "properties": { "assetTypes": { "maxItems": 0 } } },
+          "else": { "properties": { "assetTypes": { "minItems": 1 } } }
+        }
+      ]
+    }
+  }
+}

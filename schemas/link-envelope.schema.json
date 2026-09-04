@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:oab:schema:link-envelope:1.0",
+  "title": "Open App Bridge link-envelope/1 payload",
+  "description": "A low-assurance, non-confidential, text-only OAB envelope. This structural schema does not relax the transport's byte, canonical-JSON, Unicode-scalar, current-declaration, replay, clock, or relational lifetime requirements.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "wireVersion",
+    "transport",
+    "requestId",
+    "intent",
+    "classification",
+    "createdAt",
+    "expiresAt",
+    "declarationId",
+    "title",
+    "representations",
+    "source"
+  ],
+  "properties": {
+    "protocol": { "const": "org.openapp.bridge" },
+    "wireVersion": { "const": "1.0" },
+    "transport": { "const": "link-envelope/1" },
+    "requestId": {
+      "type": "string",
+      "pattern": "^(?=.{22,128}$)(?:[A-Za-z0-9_-]{4})*(?:[A-Za-z0-9_-][AQgw]|[A-Za-z0-9_-]{2}[AEIMQUYcgkosw048])?$",
+      "description": "A freshly generated identifier containing at least 128 bits of entropy."
+    },
+    "intent": { "const": "preview" },
+    "classification": { "const": "non-confidential" },
+    "createdAt": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+    "expiresAt": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Must be after createdAt and no more than 300000 milliseconds later."
+    },
+    "declarationId": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "pattern": "^[!-~]{8,512}$"
+    },
+    "title": {
+      "type": ["string", "null"],
+      "maxLength": 240,
+      "pattern": "^[^\\u0000-\\u001F\\u007F-\\u009F\\u061C\\u200E\\u200F\\u2028\\u2029\\u202A-\\u202E\\u2066-\\u2069]*$"
+    },
+    "representations": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "text/markdown": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\u0000]*\\S[^\\u0000]*$"
+        },
+        "text/plain": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\u0000]*\\S[^\\u0000]*$"
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["application", "url"],
+      "properties": {
+        "application": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[^\\u0000-\\u001F\\u007F-\\u009F\\u061C\\u200E\\u200F\\u2028\\u2029\\u202A-\\u202E\\u2066-\\u2069]*$"
+        },
+        "url": {
+          "type": ["string", "null"],
+          "format": "uri",
+          "maxLength": 2048,
+          "pattern": "^(?:https://(?![^/?#]*@)[^/?#]+(?:/[^?#\\\\]*)?|http://(?:localhost|(?:[A-Za-z0-9-]+\\.)*localhost|127(?:\\.(?:25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})){3}|\\[::1\\])(?::[0-9]{1,5})?(?:/[^?#\\\\]*)?)$"
+        }
+      }
+    }
+  }
+}

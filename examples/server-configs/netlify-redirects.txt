@@ -1,0 +1,6 @@
+# Exact OAB extensionless routing skeleton. Pair with netlify-headers.txt and
+# application-supplied restricted Documents/resources; see README.md.
+/.well-known/open-app-bridge              /open-app-bridge.json       200!
+/_oab/detached-helper                     /detached-helper.html       200!
+/.well-known/open-app-bridge/callback     /oab-callback.html          200!
+/_oab/receive                             /index.html                 200!

@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:oab:schema:protocol-message:0.1-deprecated",
+  "title": "Removed OAB 0.1 cross-origin protocol message",
+  "description": "No instance is valid. OAB 0.2 removed the cross-origin message state machine; use link-envelope/1 or detached-datachannel/1.",
+  "$comment": "This rejecting tombstone prevents a removed OAB 0.1 window message from being mistaken for a supported protocol message. OAB 0.2 uses profile-specific schemas instead.",
+  "not": {}
+}

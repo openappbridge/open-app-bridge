@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:oab:schema:detached-callback:1.0",
+  "title": "Open App Bridge detached-datachannel/1 sender callback wrapper",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "transport",
+    "type",
+    "requestId",
+    "channelId",
+    "receiverOrigin",
+    "envelope"
+  ],
+  "properties": {
+    "protocol": { "const": "org.openapp.bridge" },
+    "transport": { "const": "detached-datachannel/1" },
+    "type": { "const": "sealed-answer" },
+    "requestId": {
+      "type": "string",
+      "anyOf": [
+        { "pattern": "^(?:[A-Za-z0-9_-]{4}){6,32}$" },
+        { "pattern": "^(?:[A-Za-z0-9_-]{4}){5,31}[A-Za-z0-9_-][AQgw]$" },
+        { "pattern": "^(?:[A-Za-z0-9_-]{4}){5,31}[A-Za-z0-9_-]{2}[AEIMQUYcgkosw048]$" }
+      ]
+    },
+    "channelId": { "type": "string", "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$" },
+    "receiverOrigin": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^(?:https://(?![^/?#]*@)[^/?#]+|http://(?:localhost|(?:[A-Za-z0-9-]+\\.)*localhost|127(?:\\.(?:25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})){3}|\\[::1\\])(?::[0-9]{1,5})?)$"
+    },
+    "envelope": { "$ref": "urn:oab:schema:detached-sealed-answer:1.0" }
+  }
+}

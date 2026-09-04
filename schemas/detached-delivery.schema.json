@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:oab:schema:detached-delivery:1.0",
+  "title": "Open App Bridge detached transient preview delivery",
+  "description": "A fully verified detached transfer exposed to receiver preview UI. It remains transient until the receiver host explicitly preserves it. Asset data values are in-memory Uint8Array instances, not JSON strings. A conforming receiver releases all transient references and wipes binary buffers on discard or timeout.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "type",
+    "transferId",
+    "title",
+    "source",
+    "representations",
+    "assets",
+    "totalBytes",
+    "dispositionExpiresAt",
+    "evidence"
+  ],
+  "anyOf": [
+    {
+      "properties": {
+        "representations": { "type": "object", "minProperties": 1 }
+      }
+    },
+    {
+      "properties": {
+        "assets": { "type": "array", "minItems": 1 }
+      }
+    }
+  ],
+  "properties": {
+    "type": { "const": "complete" },
+    "transferId": {
+      "type": "string",
+      "pattern": "^(?:[A-Za-z0-9_-]{24}(?:[A-Za-z0-9_-]{4}){0,26}|[A-Za-z0-9_-]{21}(?:[A-Za-z0-9_-]{4}){0,26}[AQgw]|[A-Za-z0-9_-]{22}(?:[A-Za-z0-9_-]{4}){0,26}[AEIMQUYcgkosw048])$"
+    },
+    "title": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 240,
+      "pattern": "^[^\\u0000-\\u001F\\u007F-\\u009F\\u061C\\u200E\\u200F\\u2028\\u2029\\u202A-\\u202E\\u2066-\\u2069]*$"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["origin", "application", "url", "originVerified"],
+      "properties": {
+        "origin": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048,
+          "pattern": "^(?:https://(?![^/?#]*@)[^/?#]+|http://(?:localhost|(?:[A-Za-z0-9-]+\\.)*localhost|127(?:\\.(?:25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})){3}|\\[::1\\])(?::[0-9]{1,5})?)$"
+        },
+        "application": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[^\\u0000-\\u001F\\u007F-\\u009F\\u061C\\u200E\\u200F\\u2028\\u2029\\u202A-\\u202E\\u2066-\\u2069]*$"
+        },
+        "url": {
+          "type": ["string", "null"],
+          "format": "uri",
+          "maxLength": 2048,
+          "pattern": "^(?:https://(?![^/?#]*@)[^/?#]+(?:/[^?#\\\\]*)?|http://(?:localhost|(?:[A-Za-z0-9-]+\\.)*localhost|127(?:\\.(?:25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})){3}|\\[::1\\])(?::[0-9]{1,5})?(?:/[^?#\\\\]*)?)$"
+        },
+        "originVerified": { "const": true }
+      }
+    },
+    "representations": {
+      "type": "object",
+      "maxProperties": 16,
+      "propertyNames": {
+        "pattern": "^[a-z0-9][a-z0-9!#$&^_.+-]{0,126}/[a-z0-9][a-z0-9!#$&^_.+-]{0,126}$"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^[^\\u0000]+$"
+      }
+    },
+    "assets": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {
+        "$comment": "data is an in-memory Uint8Array and therefore intentionally has no JSON representation constraint.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "mimeType", "data"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240,
+            "pattern": "^(?!\\.{1,2}$)[^/\\\\\\u0000-\\u001F\\u007F-\\u009F\\u061C\\u200E\\u200F\\u2028\\u2029\\u202A-\\u202E\\u2066-\\u2069]+$"
+          },
+          "mimeType": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9!#$&^_.+-]{0,126}/[a-z0-9][a-z0-9!#$&^_.+-]{0,126}$"
+          },
+          "data": {}
+        }
+      }
+    },
+    "totalBytes": { "type": "integer", "minimum": 1, "maximum": 33554432 },
+    "dispositionExpiresAt": {
+      "description": "Receiver-controlled absolute Unix time in milliseconds by which visible transient preview must become Preserve or Discard.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "transport",
+        "originVerified",
+        "encryptedPeerChannel",
+        "receiverAuthorized",
+        "persisted"
+      ],
+      "properties": {
+        "transport": { "const": "detached-datachannel/1" },
+        "originVerified": { "const": true },
+        "encryptedPeerChannel": { "const": true },
+        "receiverAuthorized": { "const": true },
+        "persisted": { "const": false }
+      }
+    }
+  }
+}

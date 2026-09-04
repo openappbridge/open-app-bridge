@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:oab:schema:detached-helper:1.0",
+  "title": "Open App Bridge detached-datachannel/1 same-origin helper envelope",
+  "description": "A content-free receiver-origin-local rendezvous envelope with a fresh request identifier and an independent single-use 256-bit channel capability.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "transport",
+    "helperRequestId",
+    "helperChannelId",
+    "receiverOrigin",
+    "receiverHelper"
+  ],
+  "properties": {
+    "protocol": { "const": "org.openapp.bridge" },
+    "transport": { "const": "detached-datachannel/1" },
+    "helperRequestId": { "$ref": "#/$defs/requestId" },
+    "helperChannelId": { "$ref": "#/$defs/channelId" },
+    "receiverOrigin": { "$ref": "#/$defs/origin" },
+    "receiverHelper": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048,
+      "pattern": "^(?:https://(?![^/?#]*@)[^/?#]+|http://(?:localhost|(?:[A-Za-z0-9-]+\\.)*localhost|127(?:\\.(?:25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})){3}|\\[::1\\])(?::[0-9]{1,5})?)/(?!/)(?!.*(?:^|/)\\.{1,2}(?:/|$))[^%?#\\\\\\u0000-\\u001F\\u007F]*$"
+    }
+  },
+  "$defs": {
+    "requestId": {
+      "type": "string",
+      "pattern": "^(?:[A-Za-z0-9_-]{24}(?:[A-Za-z0-9_-]{4}){0,26}|[A-Za-z0-9_-]{21}(?:[A-Za-z0-9_-]{4}){0,26}[AQgw]|[A-Za-z0-9_-]{22}(?:[A-Za-z0-9_-]{4}){0,26}[AEIMQUYcgkosw048])$"
+    },
+    "channelId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$"
+    },
+    "origin": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^(?:https://(?![^/?#]*@)[^/?#]+|http://(?:localhost|(?:[A-Za-z0-9-]+\\.)*localhost|127(?:\\.(?:25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})){3}|\\[::1\\])(?::[0-9]{1,5})?)$"
+    }
+  }
+}

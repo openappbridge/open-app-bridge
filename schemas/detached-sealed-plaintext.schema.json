@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:oab:schema:detached-sealed-plaintext:1.0",
+  "title": "Open App Bridge detached-datachannel/1 sealed-answer plaintext",
+  "description": "The exact authenticated plaintext encrypted by the receiver. It is never carried directly in a URL or HTTP request.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["answer", "transcriptHash"],
+  "properties": {
+    "answer": { "$ref": "urn:oab:schema:detached-answer:1.0" },
+    "transcriptHash": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$"
+    }
+  }
+}

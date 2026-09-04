@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>OAB share widget example</title>
+    <link rel="stylesheet" href="../shared.css">
+  </head>
+  <body>
+    <main>
+      <div class="eyebrow">Open App Bridge · Drop-in sender widget</div>
+      <article id="shareable-note" class="card stack">
+        <h1>A portable research note</h1>
+        <p>
+          This article becomes shareable without application-specific sender
+          UI. The widget captures this section as safe static HTML and text.
+        </p>
+        <ul>
+          <li>Choose from previous receiver domains.</li>
+          <li>Search and enter a new domain in one field.</li>
+          <li>Public destinations are always verified over HTTPS.</li>
+          <li>Select private peer transfer or a non-confidential text link explicitly.</li>
+          <li>Verify support before the separate Send action.</li>
+        </ul>
+      </article>
+
+      <section class="card stack" aria-labelledby="share-heading">
+        <h2 id="share-heading">Share this note</h2>
+        <p>
+          For local testing, use <code>127.0.0.1:8080</code> as the
+          receiver domain. To exercise the public product integration, enter
+          <code>markerpad.app</code> after deploying a compatible MarkerPad
+          release.
+        </p>
+        <div class="actions">
+          <button id="share-article" type="button">Share with another app</button>
+        </div>
+      </section>
+
+      <oab-share
+        detached
+        trigger="#share-article"
+        content-selector="#shareable-note"
+        content-title="A portable research note"
+        source-application="OAB widget example"
+      ></oab-share>
+    </main>
+
+    <script type="module" src="../../src/share-widget.js"></script>
+  </body>
+</html>

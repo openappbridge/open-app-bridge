@@ -1,0 +1,30 @@
+name: Protocol or SDK proposal
+description: Propose an interoperability improvement.
+title: "[Proposal]: "
+labels: [proposal]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Interoperability problem
+      description: Describe the use case without assuming a solution.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: true
+  - type: textarea
+    id: security
+    attributes:
+      label: Security, privacy, and decentralization impact
+    validations:
+      required: true

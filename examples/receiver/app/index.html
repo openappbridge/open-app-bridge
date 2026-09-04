@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>OAB strict receiver application</title>
+    <link rel="stylesheet" href="/examples/shared.css">
+  </head>
+  <body>
+    <main>
+      <div class="eyebrow">Open App Bridge · Strict application</div>
+      <h1>Preserved document</h1>
+      <p id="isolation" class="verified"></p>
+      <p id="status">Loading the approved local document…</p>
+      <section id="document" class="card stack hidden" aria-labelledby="document-title">
+        <h2 id="document-title"></h2>
+        <div id="provenance" class="verified"></div>
+        <pre id="document-text"></pre>
+        <div id="document-assets" class="asset-list"></div>
+        <div class="actions">
+          <button id="delete" class="danger">Delete local example</button>
+          <a class="action-button" href="/examples/receiver/index.html">Return to receiver bridge</a>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/examples/receiver/app/app.js"></script>
+  </body>
+</html>

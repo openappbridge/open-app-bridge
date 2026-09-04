@@ -1,0 +1,107 @@
+{
+  "name": "open-app-bridge",
+  "version": "1.0.0",
+  "description": "An open, registry-free protocol for user-mediated state and content handoffs between web applications.",
+  "homepage": "https://openappbridge.org",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openappbridge/open-app-bridge.git"
+  },
+  "bugs": {
+    "url": "https://github.com/openappbridge/open-app-bridge/issues"
+  },
+  "type": "module",
+  "types": "./types/index.d.ts",
+  "license": "Apache-2.0",
+  "author": "Zeratul Ltd",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "sideEffects": [
+    "./src/share-widget.js",
+    "./dist/oab-widget.js",
+    "./dist/oab-widget.min.js"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./src/index.js"
+    },
+    "./widget": {
+      "types": "./types/widget.d.ts",
+      "import": "./dist/oab-widget.js"
+    },
+    "./widget/min": {
+      "types": "./types/widget.d.ts",
+      "import": "./dist/oab-widget.min.js"
+    },
+    "./widget/source": {
+      "types": "./types/widget.d.ts",
+      "import": "./src/share-widget.js"
+    },
+    "./widget/styles": "./dist/oab-widget.css",
+    "./standalone": {
+      "types": "./types/index.d.ts",
+      "import": "./dist/oab.js"
+    },
+    "./standalone/min": {
+      "types": "./types/index.d.ts",
+      "import": "./dist/oab.min.js"
+    },
+    "./schemas/*": "./schemas/*"
+  },
+  "files": [
+    "src",
+    "dist",
+    "types",
+    "schemas",
+    "docs",
+    "spec",
+    "examples",
+    "CHANGELOG.md",
+    "CODE_OF_CONDUCT.md",
+    "COMPATIBILITY.md",
+    "CONTRIBUTING.md",
+    "DISTRIBUTION.md",
+    "GOVERNANCE.md",
+    "ROADMAP.md",
+    "SECURITY.md",
+    "LICENSE",
+    "NOTICE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "node scripts/build-distribution.mjs",
+    "build:verify": "node scripts/verify-distribution.mjs",
+    "test:distribution": "node scripts/test-distribution.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "test:browser": "playwright test",
+    "test:browser:chromium": "playwright test --project=chromium",
+    "check": "node scripts/check-repository.mjs && npm test",
+    "pack:check": "npm pack --dry-run --json",
+    "release:prepare": "npm run check && npm run build && npm run test:distribution && npm run build:verify",
+    "prepack": "npm run release:prepare",
+    "prepublishOnly": "node scripts/assert-release-environment.mjs",
+    "example": "node examples/server.mjs"
+  },
+  "keywords": [
+    "content-sharing",
+    "custom-element",
+    "interoperability",
+    "markdown",
+    "datachannel",
+    "decentralized",
+    "discovery",
+    "protocol",
+    "webrtc",
+    "web"
+  ],
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "esbuild": "0.28.2"
+  }
+}

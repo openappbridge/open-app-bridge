@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:oab:schema:detached-sealed-answer:1.0",
+  "title": "Open App Bridge detached-datachannel/1 sealed answer",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "algorithm",
+    "receiverPublicKey",
+    "salt",
+    "iv",
+    "ciphertext"
+  ],
+  "properties": {
+    "algorithm": { "const": "ECDH-P256+HKDF-SHA256+A256GCM" },
+    "receiverPublicKey": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kty", "crv", "x", "y"],
+      "properties": {
+        "kty": { "const": "EC" },
+        "crv": { "const": "P-256" },
+        "x": { "type": "string", "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$" },
+        "y": { "type": "string", "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$" }
+      }
+    },
+    "salt": { "type": "string", "pattern": "^[A-Za-z0-9_-]{21}[AQgw]$" },
+    "iv": { "type": "string", "pattern": "^[A-Za-z0-9_-]{16}$" },
+    "ciphertext": {
+      "type": "string",
+      "minLength": 22,
+      "maxLength": 43691,
+      "pattern": "^(?:(?:[A-Za-z0-9_-]{4})*|(?:[A-Za-z0-9_-]{4})*[A-Za-z0-9_-][AQgw]|(?:[A-Za-z0-9_-]{4})*[A-Za-z0-9_-]{2}[AEIMQUYcgkosw048])$"
+    }
+  }
+}

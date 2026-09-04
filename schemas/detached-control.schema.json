@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:oab:schema:detached-control:1.0",
+  "title": "Open App Bridge detached-datachannel/1 control payload",
+  "description": "The canonical JSON payload inside a binary detached control frame. The binary frame header carries the control type.",
+  "oneOf": [
+    { "$ref": "#/$defs/capabilities" },
+    { "$ref": "#/$defs/manifest" },
+    { "$ref": "#/$defs/grant" },
+    { "$ref": "#/$defs/complete" },
+    { "$ref": "#/$defs/previewing" },
+    { "$ref": "#/$defs/result" },
+    { "$ref": "#/$defs/abort" }
+  ],
+  "$defs": {
+    "transferId": {
+      "type": "string",
+      "pattern": "^(?:[A-Za-z0-9_-]{24}(?:[A-Za-z0-9_-]{4}){0,26}|[A-Za-z0-9_-]{21}(?:[A-Za-z0-9_-]{4}){0,26}[AQgw]|[A-Za-z0-9_-]{22}(?:[A-Za-z0-9_-]{4}){0,26}[AEIMQUYcgkosw048])$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$"
+    },
+    "capabilities": { "$ref": "urn:oab:schema:detached-capabilities:1.0" },
+    "manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["manifest", "manifestDigest"],
+      "properties": {
+        "manifest": { "$ref": "urn:oab:schema:detached-manifest:1.0" },
+        "manifestDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "grant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["transferId", "manifestDigest"],
+      "properties": {
+        "transferId": { "$ref": "#/$defs/transferId" },
+        "manifestDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "complete": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["transferId", "manifestDigest", "totalFrames", "completionDigest"],
+      "properties": {
+        "transferId": { "$ref": "#/$defs/transferId" },
+        "manifestDigest": { "$ref": "#/$defs/digest" },
+        "totalFrames": { "type": "integer", "minimum": 1, "maximum": 65536 },
+        "completionDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "previewing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["transferId", "status"],
+      "properties": {
+        "transferId": { "$ref": "#/$defs/transferId" },
+        "status": { "const": "previewing" }
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["transferId", "disposition"],
+      "properties": {
+        "transferId": { "$ref": "#/$defs/transferId" },
+        "disposition": { "enum": ["preserved", "discarded"] }
+      }
+    },
+    "abort": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason"],
+      "properties": {
+        "reason": {
+          "enum": [
+            "expired",
+            "integrity_failure",
+            "internal_error",
+            "policy_denied",
+            "protocol_error",
+            "receiver_cancelled",
+            "resource_limit",
+            "sender_cancelled",
+            "unavailable",
+            "user_rejected"
+          ]
+        }
+      }
+    }
+  }
+}
